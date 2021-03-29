@@ -15,9 +15,12 @@ var playerMoney = 10;
 console.log(playerName, playerAttack, playerHealth);
 
 var enemyNames = ["Roborto", "Amy Android", "Robo Trumble"];
+var enemyHealth = 50;
+var enemyAttack = 12;
+
 console.log(enemyNames);
 
-var fightLoop = function (enemyName, enemyHealth, enemyAttack) {
+var fightLoop = function (enemyName) {
   // Alert players that they are starting the round
   //window.alert("Welcome to Robot Gladiators!");
 
@@ -68,8 +71,8 @@ var fightLoop = function (enemyName, enemyHealth, enemyAttack) {
 
 var doFight = function (enemyName) {
   // initialize this enemyName health & attack
-  var enemyHealth = 50;
-  var enemyAttack = 12;
+  enemyHealth = 50;
+  enemyAttack = 12;
 
   // log this enemy starting stats
   console.log("--- starting a new fight : " + enemyName + " ------");
@@ -80,13 +83,26 @@ var doFight = function (enemyName) {
 
   // repeat and execute as long as this enemy robot is alive
   while (playerHealth > 0 && enemyHealth > 0) {
-    fightLoop(enemyName, enemyHealth, enemyAttack);
+    fightLoop(enemyName);
+  }
+
+  if (playerHealth <= 0) {
+    window.alert("LOSE : " + playerName + " has died!");
+  } else if (enemyHealth <= 0) {
+    window.alert("WIN : " + enemyName + " has died!");
   }
 
   console.log("----- fight with " + enemyName + " is OVER! -----");
 };
 
-var fight = function (enemyName, index) {
+var fight = function (enemyName, round) {
+  console.log(
+    "   --- fight START -> enemyName : " + enemyName + " round : " + round
+  );
+
+  //show user what round it is
+  window.alert("Welcome to Robot Gladiators! Round " + round);
+
   // set a variable if we want to fight this enemy or not
   var choiceMade = false;
   var willFight = false;
@@ -132,9 +148,65 @@ var fight = function (enemyName, index) {
     console.log("We are going to fight : " + enemyName);
     doFight(enemyName);
   } else {
-    console.log("We are not goign to fight :" + enemyName);
+    console.log("We are not going to fight :" + enemyName);
+  }
+  console.log(
+    "   --- fight END -> enemyName : " + enemyName + " round : " + round
+  );
+};
+
+// function to start a new game
+var startGame = function () {
+  console.log("---- startGame START...");
+
+  // initialize player stats
+  playerHealth = 100;
+  playerAttack = 10;
+  playerMoney = 10;
+
+  for (var i = 0; i < enemyNames.length; i++) {
+    console.log("  doing index : " + i + " enemyName : " + enemyNames[i]);
+    if (playerHealth > 0) {
+      // you not dead, we can fight
+      console.log("      player NOT dead, can fight");
+      var pickedEnemyName = enemyNames[i];
+      fight(pickedEnemyName, i + 1);
+    } else {
+      // you dead
+      console.log("      player IS dead, can NOT fight");
+
+      window.alert("You have lost your robot in battle! Game Over!");
+      break;
+    }
+  }
+  console.log("---- startGame FINISHED!");
+
+  // after the loop ends, the player is either out of health or enemies to fight
+  endGame();
+};
+
+var endGame = function () {
+  //if the player is still alive, player wins!
+  if (playerHealth > 0) {
+    window.alert(
+      "Great job, you've survived the game! You now have a score of " +
+        playerMoney +
+        "."
+    );
+  } else {
+    window.alert("You've lost your robot in battle.");
+  }
+
+  // ask player if they'd like to play again
+  var playAgainConfirm = window.confirm("Would you like to play again?");
+
+  if (playAgainConfirm) {
+    //restart the game
+    startGame();
+  } else {
+    window.alert("Thank you for playing Robot Gladiators! Come back soon!");
   }
 };
 
-// iterate over all enemy names, and call fight for each one.  argument for fight is the current value (ie, each indidvidual enemy name)
-enemyNames.forEach(fight);
+// start the game when the page loads
+startGame();
