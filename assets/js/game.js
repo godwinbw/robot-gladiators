@@ -25,7 +25,10 @@ var fightLoop = function (enemyName) {
   //window.alert("Welcome to Robot Gladiators!");
 
   //Subtract the value of `playerAttack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
-  enemyHealth = enemyHealth - playerAttack;
+  var playerAttackDamage = randomNumber(playerAttack - 3, playerAttack);
+  var enemyAttackDamage = randomNumber(enemyAttack - 3, enemyAttack);
+
+  enemyHealth = Math.max(0, enemyHealth - playerAttackDamage);
 
   // Log a resulting message to the console so we know that it worked.
   console.log(
@@ -47,7 +50,7 @@ var fightLoop = function (enemyName) {
   }
 
   // Subtract the value of `enemyAttack` from the value of `playerHealth` and use that result to update the value in the `playerHealth` variable.
-  playerHealth = playerHealth - enemyAttack;
+  playerHealth = Math.max(0, playerHealth - enemyAttackDamage);
 
   // Log a resulting message to the console so we know that it worked.
   console.log(
@@ -69,9 +72,16 @@ var fightLoop = function (enemyName) {
   }
 };
 
+// function to generate a random numeric value
+var randomNumber = function (min, max) {
+  var value = Math.floor(Math.random() * (max - min + 1) + min);
+
+  return value;
+};
+
 var doFight = function (enemyName) {
   // initialize this enemyName health & attack
-  enemyHealth = 50;
+  enemyHealth = randomNumber(40, 60);
   enemyAttack = 12;
 
   // log this enemy starting stats
