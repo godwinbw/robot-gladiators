@@ -165,13 +165,10 @@ var doFight = function (enemyInfo) {
   console.log("----- fight with " + enemyInfo.name + " is OVER! -----");
 };
 
-var fight = function (enemyInfo, round, totalRounds) {
-  console.log(
-    "   --- fight START -> enemyName : " + enemyInfo.name + " round : " + round
-  );
-
-  //show user what round it is
-  window.alert("Welcome to Robot Gladiators! Round " + round);
+var fightOrSkip = function (enemyInfo) {
+  // return true if user wants to fight
+  // return false if user wants to skip
+  // loop until user makes a valid choice
 
   // set a variable if we want to fight this enemy or not
   var choiceMade = false;
@@ -182,17 +179,21 @@ var fight = function (enemyInfo, round, totalRounds) {
   //we will loop until a valid choice is made
   console.log("Does user want to fight " + enemyInfo.name + " ? let's ask!");
 
+  // loop until we get a valid choice
   do {
     // Ask players if they want to fight
     var promptFight = window.prompt(
       "Would you like to FIGHT or SKIP this battle? Enter 'FIGHT' or 'SKIP' to choose."
     );
 
-    if (promptFight === "fight" || promptFight === "FIGHT") {
+    //convert to all lowercase
+    promptFight = promptFight.toLowerCase();
+
+    if (promptFight === "fight") {
       // player chose to fight
       choiceMade = true;
       willFight = true;
-    } else if (promptFight === "skip" || promptFight === "SKIP") {
+    } else if (promptFight === "skip") {
       // player chose to skip
       // confirm player wants to skip
       var confirmSkip = window.confirm("Are you sure you'd like to quit?");
@@ -216,7 +217,20 @@ var fight = function (enemyInfo, round, totalRounds) {
     }
   } while (!choiceMade);
 
-  if (willFight) {
+  // now return a value
+  return willFight;
+};
+
+var fight = function (enemyInfo, round, totalRounds) {
+  console.log(
+    "   --- fight START -> enemyName : " + enemyInfo.name + " round : " + round
+  );
+
+  //show user what round it is
+  window.alert("Welcome to Robot Gladiators! Round " + round);
+
+  // will user fight or skip this fight?
+  if (fightOrSkip(enemyInfo)) {
     console.log("We are going to fight : " + enemyInfo.name);
     doFight(enemyInfo);
 
