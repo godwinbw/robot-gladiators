@@ -81,16 +81,12 @@ var enemyInfo = [
 
 console.log(enemyInfo);
 
-var fightLoop = function (enemyInfo) {
-  // Alert players that they are starting the round
-  //window.alert("Welcome to Robot Gladiators!");
-
-  //Subtract the value of `playerInfo.attack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
-  var playerAttackDamage = randomNumber(
-    playerInfo.attack - 3,
-    playerInfo.attack
-  );
-  var enemyAttackDamage = randomNumber(enemyInfo.attack - 3, enemyInfo.attack);
+var playerAttackFirst = function (
+  enemyInfo,
+  enemyAttackDamage,
+  playerAttackDamage
+) {
+  // the player attacks first in this round
 
   enemyInfo.health = Math.max(0, enemyInfo.health - playerAttackDamage);
 
@@ -111,13 +107,46 @@ var fightLoop = function (enemyInfo) {
   // check enemy's health
   if (enemyInfo.health <= 0) {
     console.log(enemyInfo.name + " has died!");
+    // no need to apply enemy damage to player, then enemy is dead
   } else {
     console.log(
       enemyInfo.name + " still has " + enemyInfo.health + " health left."
     );
-  }
+    //now apply enemy damage to player
+    playerInfo.health = Math.max(0, playerInfo.health - enemyAttackDamage);
 
-  // Subtract the value of `enemyAttack` from the value of `playerInfo.health` and use that result to update the value in the `playerInfo.health` variable.
+    // Log a resulting message to the console so we know that it worked.
+    console.log(
+      enemyInfo.name +
+        " attacked " +
+        playerInfo.name +
+        "with " +
+        enemyAttackDamage +
+        " damage. " +
+        playerInfo.name +
+        " now has " +
+        playerInfo.health +
+        " health remaining."
+    );
+
+    // check player's health
+    if (playerInfo.health <= 0) {
+      console.log(playerInfo.name + " has died!");
+    } else {
+      console.log(
+        playerInfo.name + " still has " + playerInfo.health + " health left."
+      );
+    }
+  }
+};
+
+var enemyAttackFirst = function (
+  enemyInfo,
+  enemyAttackDamage,
+  playerAttackDamage
+) {
+  // enemy attacks first this round
+  //now apply enemy damage to player
   playerInfo.health = Math.max(0, playerInfo.health - enemyAttackDamage);
 
   // Log a resulting message to the console so we know that it worked.
@@ -134,26 +163,91 @@ var fightLoop = function (enemyInfo) {
       " health remaining."
   );
 
-  // check player's health
+  //check if player has died
   if (playerInfo.health <= 0) {
     console.log(playerInfo.name + " has died!");
+    // no need to apply player damage to enemy, the player is dead.
   } else {
     console.log(
       playerInfo.name + " still has " + playerInfo.health + " health left."
     );
+
+    // now apply player damage to enemy
+    enemyInfo.health = Math.max(0, enemyInfo.health - playerAttackDamage);
+
+    // Log a resulting message to the console so we know that it worked.
+    console.log(
+      playerInfo.name +
+        " attacked " +
+        enemyInfo.name +
+        " with " +
+        playerAttackDamage +
+        " damage. " +
+        enemyInfo.name +
+        " now has " +
+        enemyInfo.health +
+        " health remaining."
+    );
+
+    //now see if enemy is dead
+    // check enemy's health
+    if (enemyInfo.health <= 0) {
+      console.log(enemyInfo.name + " has died!");
+    } else {
+      console.log(
+        enemyInfo.name + " still has " + enemyInfo.health + " health left."
+      );
+    }
+  }
+};
+
+var fightLoop = function (enemyInfo, isPlayerTurn) {
+  // Alert players that they are starting the round
+  //window.alert("Welcome to Robot Gladiators!");
+
+  //determine the attack damage this round, for both enemy and player
+  var playerAttackDamage = randomNumber(
+    playerInfo.attack - 3,
+    playerInfo.attack
+  );
+  var enemyAttackDamage = randomNumber(enemyInfo.attack - 3, enemyInfo.attack);
+
+  if (isPlayerTurn) {
+    playerAttackFirst(enemyInfo, enemyAttackDamage, playerAttackDamage);
+  } else {
+    enemyAttackFirst(enemyInfo, enemyAttackDamage, playerAttackDamage);
   }
 };
 
 var doFight = function (enemyInfo) {
   // log this enemy starting stats
   console.log("--- starting a new fight : " + enemyInfo.name + " ------");
-  console.log("    enemyHealth -> " + enemyInfo.health);
-  console.log("    enemyAttack ->" + enemyInfo.attack);
+  console.log("    playerInfo:");
+  console.log("          name  : " + playerInfo.name);
+  console.log("          health: " + playerInfo.health);
+  console.log("          attack: " + playerInfo.attack);
+  console.log("    enemyInfo:");
+  console.log("          name  : " + enemyInfo.name);
+  console.log("          health: " + enemyInfo.health);
+  console.log("          attack: " + enemyInfo.attack);
+
+  // figure out who attacks first
+  var isPlayerTurn;
+  if (Math.random() > 0.5) {
+    isPlayerTurn = false;
+    console.log("   ENEMY attacks first!");
+  } else {
+    isPlayerTurn = true;
+    console.log("   PLAYER attacks first!");
+  }
+
   console.log("---- ready to fight! ---------");
 
   // repeat and execute as long as this enemy robot is alive
   while (playerInfo.health > 0 && enemyInfo.health > 0) {
-    fightLoop(enemyInfo);
+    fightLoop(enemyInfo, isPlayerTurn);
+    //switch turn order for next round
+    isPlayerTurn = !isPlayerTurn;
   }
 
   if (playerInfo.health <= 0) {
